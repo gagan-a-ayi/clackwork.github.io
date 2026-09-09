@@ -1,0 +1,21 @@
+{
+  "name": "Clackwork",
+  "short_name": "Clackwork",
+  "description": "Clackwork is a fast, distraction-free typing trainer with live WPM tracking, a keyboard preview that shows you the next key to press, and fresh practice text every run.",
+  "start_url": "./clackwork.html",
+  "display": "standalone",
+  "background_color": "#11151b",
+  "theme_color": "#11151b",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
