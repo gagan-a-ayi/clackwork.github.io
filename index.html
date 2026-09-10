@@ -3,18 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clackwork</title>
-<!-- Browser tab favicon -->
-<link rel="icon" type="image/png" sizes="512x512" href="icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon.png">
-
-<!-- iOS "Add to Home Screen" icon -->
-<link rel="apple-touch-icon" href="icon.png">
-
-<!-- PWA install icon + metadata -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#11151b">
-  
+<title>Clackwork — typing practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -241,27 +230,35 @@
     background:var(--surface);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:34px 32px;
-    min-height:170px;
+    padding:36px 0;
+    min-height:120px;
     cursor:text;
+    overflow:hidden;
   }
 
   .type-text{
     position:relative;
+    overflow:hidden;
+    white-space:nowrap;
+    height:calc(1.5em);
+    margin:0 32px;
+    -webkit-mask-image:linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+    mask-image:linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+  }
+  .type-track{
+    position:relative;
+    display:inline-block;
+    white-space:nowrap;
     font-family:var(--mono);
-    font-size:clamp(19px, 2.6vw, 24px);
-    line-height:1.7;
+    font-size:clamp(19px, 2.6vw, 26px);
+    line-height:1.5;
     letter-spacing:0.2px;
     color:var(--text-faint);
     user-select:none;
-    max-height:calc(1.7em * 3);
-    overflow-y:auto;
-    overscroll-behavior:contain;
-    scrollbar-width:none;
-    -ms-overflow-style:none;
+    will-change:transform;
+    transition:transform .16s ease-out;
   }
-  .type-text::-webkit-scrollbar{ display:none; width:0; height:0; }
-  .type-text .ch{ position:relative; white-space:pre; }
+  .type-text .ch{ position:relative; white-space:pre; display:inline-block; }
   .type-text .ch.correct{ color:var(--text); }
   .type-text .ch.incorrect{ color:var(--coral-ink); background:rgba(255,107,94,0.14); border-radius:2px; }
   .type-text .ch.current{
@@ -606,7 +603,7 @@
   </div>
 
   <div class="panel" id="panel">
-    <div class="type-text" id="typeText"></div>
+    <div class="type-text" id="typeText"><div class="type-track" id="typeTrack"></div></div>
     <input class="hidden-input" id="hiddenInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done">
     <div class="overlay" id="overlay">click here or start typing to begin</div>
     <div class="results" id="results">
@@ -727,6 +724,7 @@
   /* ============ elements ============ */
   const el = {
     typeText: document.getElementById('typeText'),
+    typeTrack: document.getElementById('typeTrack'),
     hiddenInput: document.getElementById('hiddenInput'),
     panel: document.getElementById('panel'),
     overlay: document.getElementById('overlay'),
@@ -855,17 +853,18 @@
       if(i === state.typed.length) span.classList.add('current');
       frag.appendChild(span);
     }
-    el.typeText.innerHTML = '';
-    el.typeText.appendChild(frag);
+    el.typeTrack.innerHTML = '';
+    el.typeTrack.appendChild(frag);
 
-    // auto-scroll: keep the current line in view, advancing one line at a time
-    const currentSpan = el.typeText.children[state.typed.length] || el.typeText.lastElementChild;
-    const firstSpan = el.typeText.children[0];
-    if(currentSpan && firstSpan){
-      const lineHeight = parseFloat(getComputedStyle(el.typeText).lineHeight) || 30;
-      const relativeTop = currentSpan.offsetTop - firstSpan.offsetTop;
-      const scrollTarget = Math.max(0, relativeTop - lineHeight);
-      el.typeText.scrollTop = scrollTarget;
+    // horizontal scroll: pin the current character near a fixed anchor point.
+    // typed text slides off to the left, untyped text is revealed sliding in from the right.
+    const currentSpan = el.typeTrack.children[state.typed.length] || el.typeTrack.lastElementChild;
+    if(currentSpan){
+      const viewportWidth = el.typeText.clientWidth;
+      const anchorX = viewportWidth * 0.22;
+      const targetShift = anchorX - currentSpan.offsetLeft;
+      const translateX = Math.min(0, targetShift);
+      el.typeTrack.style.transform = 'translateX(' + translateX + 'px)';
     }
   }
 
