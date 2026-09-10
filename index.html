@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clackwork</title>
+<title>Clackwork — typing practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -240,7 +240,13 @@
     position:relative;
     overflow:hidden;
     white-space:nowrap;
-    height:calc(1.5em);
+    font-family:var(--mono);
+    font-size:clamp(19px, 2.6vw, 26px);
+    line-height:1.5;
+    letter-spacing:0.2px;
+    color:var(--text-faint);
+    user-select:none;
+    height:calc(1.5em + 4px);
     margin:0 32px;
     -webkit-mask-image:linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
     mask-image:linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
@@ -249,12 +255,6 @@
     position:relative;
     display:inline-block;
     white-space:nowrap;
-    font-family:var(--mono);
-    font-size:clamp(19px, 2.6vw, 26px);
-    line-height:1.5;
-    letter-spacing:0.2px;
-    color:var(--text-faint);
-    user-select:none;
     will-change:transform;
     transition:transform .16s ease-out;
   }
